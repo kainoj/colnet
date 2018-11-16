@@ -16,6 +16,7 @@ Structure of YAML file:
 """
 
 import yaml
+import argparse
 from trainer import Training
 from colnet import ColNet
 
@@ -58,6 +59,10 @@ def load_config(config_file):
 
 if __name__ == "__main__":
     
-    t = load_config('../config/test0.yaml')
+    parser = argparse.ArgumentParser(description='Loads network configuration.')
+    parser.add_argument('config', metavar='config', help='path to .yaml config file')
+    args = parser.parse_args()
+
+    t = load_config(args.config)
     t.run()
     
