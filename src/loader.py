@@ -2,9 +2,8 @@
 
 
 Structure of YAML file:
-    TODO(Przemek) model: (optional) snapshot of a net state. 
-        If given, training will go on based on rest of parameters.
-        If not given, a fresh instance of a net will be created.
+    model_checkpoint: (optional) path to a checkpoint of a net state. 
+        If given, training resume on based on rest of parameters.
     epochs: total number of epoches for model yo run.
     batch_size: batch size for train, test and dev sets.
     net_size: (optional) divisor of net optput sizes. DEFAULT: 1.
@@ -27,12 +26,13 @@ def load_config(config_file):
     Args:
         config_file: path to config file
     Returns:
-        Instance of ColNet
+        Instance of Training environment
     """
 
     # Default parameters
     net_size = 1
     learning_rate = 0.0001
+    model_checkpoint = None
 
     with open(config_file, 'r') as conf:
         y = yaml.load(conf)
@@ -43,7 +43,9 @@ def load_config(config_file):
         if 'learning_rate' in y:
             learning_rate = y['learning_rate']
 
-        # TODO(Przemek): implement loading a model
+        if 'model_checkpoint' in y:
+            model_checkpoint = y['model_checkpoint']
+
 
         train = Training(batch_size=y['batch_size'],
                          epochs=y['epochs'],
@@ -51,7 +53,8 @@ def load_config(config_file):
                          img_dir_val=y['img_dir_val'],
                          img_dir_test=y['img_dir_val'],
                          net_size=net_size,
-                         learning_rate=learning_rate)
+                         learning_rate=learning_rate,
+                         model_checkpoint=model_checkpoint)
 
         return train
 

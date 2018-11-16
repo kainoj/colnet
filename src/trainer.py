@@ -22,8 +22,10 @@ class Training:
                  img_dir_train, 
                  img_dir_val,
                  img_dir_test,
+                 start_epoch=0,
                  net_size=1,
-                 learning_rate=0.0001):
+                 learning_rate=0.0001,
+                 model_checkpoint=None):
         """Initializes training environment
 
         Args:
@@ -32,8 +34,11 @@ class Training:
             img_dir_train: name of directory containing images for TRAINING
             img_dir_val: name of directory containing images for VALIDATING
             img_dir_test: name of directory containing images for TESTING
-            net_size: divisor og the net output sizes, default: 1
-            learning_rate: alpha parameter of GD/ADAM
+            start_epoch: epoch to start training with. Default: 0
+            net_size: divisor og the net output sizes. Default: 1
+            learning_rate: alpha parameter of GD/ADAM. Default: 0.0001
+            model_checkpoint: a path to a previously saved model. 
+                Training will resume. Defaut: None
         """
         self.img_dir_train = img_dir_train
         self.img_dir_val = img_dir_val
@@ -43,8 +48,16 @@ class Training:
         self.net = ColNet(net_size=net_size)
         self.mse = nn.MSELoss(reduction='sum')
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
+        self.start_epoch = start_epoch
         self.EPOCHS = epochs
         self.BATCH_SIZE = batch_size
+
+        if model_checkpoint:
+            print("Resuming training of: " + model_checkpoint)
+            checkpoint = torch.load(model_checkpoint)
+            self.net.load_state_dict(checkpoint['model_state_dict'])
+            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            self.start_epoch = checkpoint['epoch'] + 1 
 
 
         self.trainset = ImagesDateset(self.img_dir_train, all2mem=True)
@@ -163,20 +176,28 @@ class Training:
         print("Saved all photos to ../out/")
 
 
-    def save(self):
-        """Saves the model to a file."""
-        model_filename = "../model/colnet{}.pt".format(time.strftime("%y%m%d-%H-%M-%S"))
-        torch.save(self.net.state_dict(), model_filename)
-        self.model_names_history.append(model_filename)
-        print('\nsaved model to {}'.format(model_filename))
+    def save_checkpoint(self, epoch):
+        """Saves a checkpoint of the model to a file."""
+        path = "../model/"
+        fname = "colnet{}-{}.pt".format(time.strftime("%y%m%d-%H-%M-%S"), epoch)
+        full_path = os.path.join(path, fname)
+
+        torch.save({
+            'epoch': epoch,
+            'model_state_dict': self.net.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict()         
+        }, full_path)        
+
+        self.model_names_history.append(full_path)
+        print('\nsaved model to {}'.format(full_path))
 
 
     def run(self):
         """Runs both training and validating."""
-        for epoch in range(self.EPOCHS):
+        for epoch in range(self.start_epoch, self.EPOCHS):
             self.train(epoch)
             self.validate(epoch)
-            self.save()
+            self.save_checkpoint(epoch)
 
 if __name__ == "__main__":
     img_dir_train = '../data/food41-120-train/'
