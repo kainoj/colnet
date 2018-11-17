@@ -53,11 +53,7 @@ class Training:
         self.BATCH_SIZE = batch_size
 
         if model_checkpoint:
-            print("Resuming training of: " + model_checkpoint)
-            checkpoint = torch.load(model_checkpoint)
-            self.net.load_state_dict(checkpoint['model_state_dict'])
-            self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-            self.start_epoch = checkpoint['epoch'] + 1 
+            self.load_checkpoint(model_checkpoint)
 
 
         self.trainset = ImagesDateset(self.img_dir_train, all2mem=True)
@@ -149,12 +145,11 @@ class Training:
         if model_dir is None:
             model_dir = self.model_names_history[-1]
 
-
         print("Make sure you're using up to date model!!!")    
         print("Colorizing {} using {}\n".format(self.img_dir_test, model_dir))
 
 
-        self.net.load_state_dict(torch.load(model_dir))
+        self.load_checkpoint(model_dir)
         
         # Switch to evaluation mode
         self.net.eval()
@@ -192,12 +187,27 @@ class Training:
         print('\nsaved model to {}'.format(full_path))
 
 
+    def load_checkpoint(self, model_checkpoint):
+        """Load a checkpoint from a given path.
+        
+        Args:
+            model_checkpoint: path to the checkpoint.
+        """
+        print("Resuming training of: " + model_checkpoint)
+        checkpoint = torch.load(model_checkpoint)
+        self.net.load_state_dict(checkpoint['model_state_dict'])
+        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        self.start_epoch = checkpoint['epoch'] + 1 
+
+
     def run(self):
         """Runs both training and validating."""
         for epoch in range(self.start_epoch, self.EPOCHS):
             self.train(epoch)
             self.validate(epoch)
             self.save_checkpoint(epoch)
+        print('Finished Training.')
+
 
 if __name__ == "__main__":
     img_dir_train = '../data/food41-120-train/'
