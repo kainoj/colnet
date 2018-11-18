@@ -1,79 +1,113 @@
-import os
-import numpy as np
 import torch
-
-from torch.utils.data import Dataset
+import numpy as np
+import torchvision.datasets
+import torchvision.transforms
 from skimage import color, io
 
 
-class ImagesDateset(Dataset):
-    """Custom dataset for loading and pre-processing images."""
+class RandomCrop(object):
+    """Randomly crops an image to size x size."""
     
-    def __init__(self, img_dir, all2mem=True):
+    def __init__(self, size):
+        self.size = size
+        
+    def __call__(self, image):
+        cropped = image  # TODO(Przemek): implement random cropping
+        assert cropped.shape == (224, 224, 3)
+        return cropped
+
+    
+class Rgb2LabNorm(object):
+    """Converts an RGB image to normalized image in LAB color sapce.
+    
+    Both (L, ab) channels are in [0, 1].
+    """
+    def __call__(self, image):
+        assert image.shape == (224, 224, 3)
+        img_lab = color.rgb2lab(image)
+        img_lab[:,:,:1] = img_lab[:,:,:1] / 100.0
+        img_lab[:,:,1:] = (img_lab[:,:,1:] + 128.0) / 256.0
+        return img_lab
+    
+    
+class ToTensor(object):
+    """Converts an image to torch.Tensor.
+    
+    Note:
+        Images are Height x Width x Channels format. 
+        One needs to convert them to CxHxW.
+    """
+    def __call__(self, image):
+        
+        assert image.shape == (224, 224, 3)
+        
+        transposed =  np.transpose(image, (2, 0, 1)).astype(np.float32)
+        image_tensor = torch.from_numpy(transposed)
+
+        assert image_tensor.shape == (3, 224, 224)
+        return image_tensor
+
+    
+class SplitLab(object):
+    """Splits tensor LAB image to L and ab channels."""
+    def __call__(self, image):
+        assert image.shape == (3, 224, 224)
+        L  = image[:1,:,:]
+        ab = image[1:,:,:]
+        return (L, ab)
+    
+    
+    
+class ImagesDateset(torchvision.datasets.ImageFolder):
+    """Custom dataset for loading and pre-processing images."""
+
+    def __init__(self, root, all2mem=False):
         """Initializes the dataset and loads images. 
         
         By default images are loaded to memory in
         a lazy manner i.e when one needs to get it.
-        For now, all the photos must be .jpg.
+
+        Imges should be organized as:
+        
+            .root/
+                class1/
+                    img1.jpg
+                    img2.jpg
+                ..
+                classn/
+                    imgx.jpg
+                    imgy.jpg
 
         Args:
-            img_dir: a directory from which images are loaded
+            root: a directory from which images are loaded
             all2mem: if set to True, then all images
                 will be read to memory at once
         """
-        self.img_dir = img_dir
-        self.all2mem = all2mem
-        self.img_names = [file for file in os.listdir(self.img_dir)]
+        super().__init__(root=root, loader=io.imread)
         
-        # TODO(Przemek) In future, allow multiple image extensions.
-        assert all([img.endswith('.jpg') for img in self.img_names])
+        if all2mem:
+            print("[WARNING] all2mem temporarily disabled")
+            
+        self.composed = torchvision.transforms.Compose(
+            [RandomCrop(224), Rgb2LabNorm(), ToTensor(), SplitLab()]
+        )
         
-        if self.all2mem:
-            self.images = [io.imread(os.path.join(self.img_dir, img)) 
-                           for img in self.img_names]
+            
         
-    
-    def __len__(self):
-        return len(self.img_names)
-    
-   
     def __getitem__(self, idx):
         """Gets an image in LAB color space.
 
         Returns:
-            Returns a tuple (L, ab, name), where:
+            Returns a tuple (L, ab, label), where:
                 L: stands for lightness - it's the net input
                 ab: is chrominance - something that the net learns
-                name: image filename
+                label: image label
             Both L and ab are torch.tesnsor
         """
+        image, label =  super().__getitem__(idx)
         
-        if self.all2mem:
-            image = self.images[idx]
-        else:
-            img_name = os.path.join(self.img_dir, self.img_names[idx])
-            image = io.imread(img_name)
-        
-        
-        assert image.shape == (224, 224, 3)
-                
-        img_lab = color.rgb2lab(image)
-        img_lab = np.transpose(img_lab, (2, 0, 1))
-        
-        assert img_lab.shape == (3, 224, 224)
-        
-        img_lab = torch.tensor(img_lab.astype(np.float32))
-        
-        assert img_lab.shape == (3, 224, 224)
-               
-        L  = img_lab[:1,:,:]
-        ab = img_lab[1:,:,:]
-        
-        # Normalize L and ab channels to lay in 0..1 range
-        L =   L / 100.0
-        ab = (ab + 128.0) / 255.0
-              
-        assert L.shape == (1, 224, 224)
-        assert ab.shape == (2, 224, 224)
-        
-        return L, ab, self.img_names[idx]   
+        L, ab = self.composed(image)
+
+        # TODO(Przemek) 
+        label = str(idx) + "-" + str(label) + "-todo.jpg"
+        return L, ab, label
