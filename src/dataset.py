@@ -3,17 +3,27 @@ import numpy as np
 import torchvision.datasets
 import torchvision.transforms
 from skimage import color, io
+from random import randint
 
 
 class RandomCrop(object):
     """Randomly crops an image to size x size."""
     
-    def __init__(self, size):
+    def __init__(self, size=224):
         self.size = size
         
     def __call__(self, image):
-        cropped = image  # TODO(Przemek): implement random cropping
-        assert cropped.shape == (224, 224, 3)
+
+        # TODO(Przemek): implement random cropping
+        h, w, _ = image.shape
+        assert min(h, w) >= self.size
+
+        off_h = randint(0, h - self.size)
+        off_w = randint(0, w - self.size)
+
+        cropped = image[off_h:off_h+self.size, off_w:off_w+self.size]
+
+        assert cropped.shape == (self.size, self.size, 3)
         return cropped
 
     
