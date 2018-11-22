@@ -1,3 +1,4 @@
+import os
 import torch
 import numpy as np
 import torchvision.datasets
@@ -71,11 +72,13 @@ class SplitLab(object):
 class ImagesDateset(torchvision.datasets.ImageFolder):
     """Custom dataset for loading and pre-processing images."""
 
-    def __init__(self, root, all2mem=False):
+    def __init__(self, root, all2mem=False, testing=False):
         """Initializes the dataset and loads images. 
         
         By default images are loaded to memory in
         a lazy manner i.e when one needs to get it.
+
+        If testing is set, then image name is returned instead of label.
 
         Imges should be organized as:
         
@@ -92,12 +95,16 @@ class ImagesDateset(torchvision.datasets.ImageFolder):
             root: a directory from which images are loaded
             all2mem: if set to True, then all images
                 will be read to memory at once
+            testing: if set to True, an image name will 
+                be returned insead of label index
         """
         super().__init__(root=root, loader=io.imread)
         
         if all2mem:
             print("[WARNING] all2mem temporarily disabled")
             
+        self.testing = testing
+
         self.composed = torchvision.transforms.Compose(
             [RandomCrop(224), Rgb2LabNorm(), ToTensor(), SplitLab()]
         )
@@ -108,16 +115,24 @@ class ImagesDateset(torchvision.datasets.ImageFolder):
         """Gets an image in LAB color space.
 
         Returns:
-            Returns a tuple (L, ab, label), where:
+            Returns a tuple (L, ab, label, name), where:
                 L: stands for lightness - it's the net input
                 ab: is chrominance - something that the net learns
-                label: image label
+                label: image label. If in testing mode, this is an image name.
             Both L and ab are torch.tesnsor
         """
         image, label =  super().__getitem__(idx)
         
         L, ab = self.composed(image)
 
-        # TODO(Przemek) 
-        label = str(idx) + "-" + str(label) + "-todo.jpg"
+        if self.testing:
+            label = self.get_name(idx)
+
         return L, ab, label
+
+    
+    def get_name(self, idx):
+        path = os.path.normpath(self.imgs[idx][0])
+        name = os.path.basename(path)
+        label = os.path.basename(os.path.dirname(path))
+        return label + "-" + name

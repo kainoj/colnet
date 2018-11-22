@@ -60,7 +60,7 @@ class Training:
         self.trainloader = DataLoader(self.trainset, batch_size=self.BATCH_SIZE, 
                                       shuffle=True, num_workers=4)
 
-        self.testset = ImagesDateset(self.img_dir_test, all2mem=True)
+        self.testset = ImagesDateset(self.img_dir_test, testing=True)
         self.testloader = DataLoader(self.testset, batch_size=self.BATCH_SIZE,
                                      shuffle=False, num_workers=4)
 
