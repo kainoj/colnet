@@ -68,10 +68,16 @@ class Training:
         self.devloader = DataLoader(self.devset, batch_size=self.BATCH_SIZE,
                                     shuffle=False, num_workers=4)
 
-        
+
         # We'll keep track on all models 
         # names that were saved on traing
         self.model_names_history = []
+
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() 
+                                   else "cpu")
+        print("Using {}\n".format(self.device))
+        self.net.to(self.device)
+
 
     def train(self, epoch):
         """One epoch network training"""
@@ -118,6 +124,7 @@ class Training:
             for batch_idx, dev_data in enumerate(self.devloader):
 
                 L_dev, ab_dev, _ = dev_data
+                L_dev, ab_dev = L_dev.to(self.device), ab_dev.to(self.device)
 
                 ab_dev_output = self.net(L_dev)
 
