@@ -92,7 +92,8 @@ class Training:
         for batch_idx, train_data in enumerate(self.trainloader):
 
             L, ab, _ = train_data
-            
+            L, ab = L.to(self.device), ab.to(self.device)
+
             self.optimizer.zero_grad()
             ab_out = self.net(L)
             
@@ -157,7 +158,8 @@ class Training:
 
 
         self.load_checkpoint(model_dir)
-        
+        self.net.to(self.device)
+
         # Switch to evaluation mode
         self.net.eval()
 
@@ -168,6 +170,7 @@ class Training:
                       .format(batch_no + 1, len(self.testloader)))
                 
                 L, _, name = data
+                L = L.to(self.device)
                 ab_outputs = self.net(L)
                 
                 for i in range(L.shape[0]):
