@@ -86,8 +86,6 @@ class Training:
 
         epoch_loss = 0.0
         
-        print("Epoch {} / {}".format(epoch + 1, self.EPOCHS))
-        
         # Turn train mode on
         self.net.train() 
 
@@ -108,7 +106,7 @@ class Training:
         
             batch_loss = loss.item()
             
-            print('[{} / {}] batch loss: {:.3f}'
+            print('[{:>2} / {}] batch loss: {:>10.3f}'
                 .format(batch_idx + 1, len(self.trainloader), batch_loss))
             epoch_loss += batch_loss
             
@@ -121,12 +119,11 @@ class Training:
         """One epoch validation on a dev set"""
 
         print("\nValidating...")
-    
+        dev_loss = 0.0
+
         # Turn eval mode on
         self.net.eval()
         with torch.no_grad():
-            
-            dev_loss = 0.0
             
             for batch_idx, dev_data in enumerate(self.devloader):
 
@@ -140,14 +137,12 @@ class Training:
                 dev_batch_loss = self.mse(ab_dev_output, ab_dev)
                 dev_loss += dev_batch_loss
 
-                print("[{} / {}] dev batch loss: {}"
+                print("[{:>2} / {}] dev batch loss: {:>10.3f}"
                     .format(batch_idx+1, len(self.devloader), dev_batch_loss))
                 
                 
                 
-            print("sum of dev losses {}".format(dev_loss.item()))
-            print("mean of dev losses {}"
-                  .format(dev_loss.item()/len(self.devloader)))
+        print("Dev loss {:.3f}".format(dev_loss.item()/len(self.devloader)))
         
         dev_loss /= len(self.devloader)
         self.loss_history['val'].append(dev_loss)
@@ -204,7 +199,7 @@ class Training:
         }, full_path)        
 
         self.model_names_history.append(full_path)
-        print('\nsaved model to {}'.format(full_path))
+        print('\nsaved model to {}\n'.format(full_path))
 
 
     def load_checkpoint(self, model_checkpoint):
@@ -224,10 +219,12 @@ class Training:
     def run(self):
         """Runs both training and validating."""
         for epoch in range(self.start_epoch, self.EPOCHS):
+            print("{2}\nEpoch {0} / {1}\n{2}"
+                  .format(epoch + 1, self.EPOCHS, '-'*32))
             self.train(epoch)
             self.validate(epoch)
             self.save_checkpoint(epoch)
-        print('Finished Training.')
+        print('\nFinished Training.')
 
 
 if __name__ == "__main__":
