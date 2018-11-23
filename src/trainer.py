@@ -51,6 +51,8 @@ class Training:
         self.start_epoch = start_epoch
         self.EPOCHS = epochs
         self.BATCH_SIZE = batch_size
+        self.loss_history = { "train": [], "val":[] }
+
 
         if model_checkpoint:
             self.load_checkpoint(model_checkpoint)
@@ -110,6 +112,10 @@ class Training:
                 .format(batch_idx + 1, len(self.trainloader), batch_loss))
             epoch_loss += batch_loss
             
+        # Epoch loss = mean loss over all batches
+        # length of trainloader indicates number of batches
+        epoch_loss /= len(self.trainloader)
+        self.loss_history['train'].append(epoch_loss)
 
     def validate(self, epoch):
         """One epoch validation on a dev set"""
@@ -142,6 +148,9 @@ class Training:
             print("sum of dev losses {}".format(dev_loss.item()))
             print("mean of dev losses {}"
                   .format(dev_loss.item()/len(self.devloader)))
+        
+        dev_loss /= len(self.devloader)
+        self.loss_history['val'].append(dev_loss)
 
 
     def test(self, model_dir=None):
@@ -190,7 +199,8 @@ class Training:
         torch.save({
             'epoch': epoch,
             'model_state_dict': self.net.state_dict(),
-            'optimizer_state_dict': self.optimizer.state_dict()         
+            'optimizer_state_dict': self.optimizer.state_dict(),
+            'losses': self.loss_history    
         }, full_path)        
 
         self.model_names_history.append(full_path)
@@ -207,6 +217,7 @@ class Training:
         checkpoint = torch.load(model_checkpoint)
         self.net.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        self.loss_history = checkpoint['losses']
         self.start_epoch = checkpoint['epoch'] + 1 
 
 
