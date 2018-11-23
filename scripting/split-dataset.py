@@ -43,25 +43,28 @@ def split_set(root, out_root, a_size, b_size=None, a_name='train', b_name='test'
         ./out_root/a_name/
         ./out_root/b_name
     """
+    chosen_classes = [line.rstrip('\n') for line in open('categories100.txt', 'r')]
+
     print("Splitting {}/*/* into {}/{}/*/* ".format(root, out_root, a_name))
 
     classes_dirs = os.listdir(root)
     for c in classes_dirs:
-        print("processing: {}".format(c))
+        if c in chosen_classes:
+            print("processing: {}".format(c))
 
-        classes_paths = os.path.join(root, c)
-        
-        imgs = os.listdir(classes_paths)
-        shuffle(imgs)
+            classes_paths = os.path.join(root, c)
+            
+            imgs = os.listdir(classes_paths)
+            shuffle(imgs)
 
-        train = imgs[:a_size]
-        classes_path_out_train = os.path.join(out_root, a_name, c)
-        copy_imgs(train, classes_paths, classes_path_out_train)
-        
-        if b_size:        
-            test = imgs[a_size:a_size+b_size]
-            classes_path_out_test = os.path.join(out_root, b_name, c)
-            copy_imgs(test, classes_paths, classes_path_out_test)
+            train = imgs[:a_size]
+            classes_path_out_train = os.path.join(out_root, a_name, c)
+            copy_imgs(train, classes_paths, classes_path_out_train)
+            
+            if b_size:        
+                test = imgs[a_size:a_size+b_size]
+                classes_path_out_test = os.path.join(out_root, b_name, c)
+                copy_imgs(test, classes_paths, classes_path_out_test)
 
 
 
