@@ -46,8 +46,6 @@ class Training:
         self.net_size = net_size
 
         self.net = ColNet(net_size=net_size)
-        self.mse = nn.MSELoss(reduction='sum')
-        self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
         self.start_epoch = start_epoch
         self.EPOCHS = epochs
         self.BATCH_SIZE = batch_size
@@ -59,6 +57,11 @@ class Training:
         if model_checkpoint:
             self.load_checkpoint(model_checkpoint)
 
+        print("Using {}\n".format(self.device))
+        self.net.to(self.device)
+
+        self.mse = nn.MSELoss(reduction='sum')
+        self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
         self.trainset = ImagesDateset(self.img_dir_train, all2mem=True)
         self.trainloader = DataLoader(self.trainset, batch_size=self.BATCH_SIZE, 
@@ -76,9 +79,6 @@ class Training:
         # We'll keep track on all models 
         # names that were saved on traing
         self.model_names_history = []
-
-        print("Using {}\n".format(self.device))
-        self.net.to(self.device)
 
 
     def train(self, epoch):
@@ -211,7 +211,7 @@ class Training:
             model_checkpoint: path to the checkpoint.
         """
         print("Resuming training of: " + model_checkpoint)
-        checkpoint = torch.load(model_checkpoint, map_location=self.device)
+        checkpoint = torch.load(model_checkpoint, map_location=torch.device("cpu")
         self.net.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.loss_history = checkpoint['losses']
