@@ -211,7 +211,7 @@ class Training:
             model_checkpoint: path to the checkpoint.
         """
         print("Resuming training of: " + model_checkpoint)
-        checkpoint = torch.load(model_checkpoint, map_location=torch.device("cpu")
+        checkpoint = torch.load(model_checkpoint, map_location=torch.device("cpu"))
         self.net.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.loss_history = checkpoint['losses']
