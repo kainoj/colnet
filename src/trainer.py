@@ -53,6 +53,8 @@ class Training:
         self.BATCH_SIZE = batch_size
         self.loss_history = { "train": [], "val":[] }
 
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() 
+                                   else "cpu")
 
         if model_checkpoint:
             self.load_checkpoint(model_checkpoint)
@@ -75,8 +77,6 @@ class Training:
         # names that were saved on traing
         self.model_names_history = []
 
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() 
-                                   else "cpu")
         print("Using {}\n".format(self.device))
         self.net.to(self.device)
 
@@ -211,7 +211,7 @@ class Training:
             model_checkpoint: path to the checkpoint.
         """
         print("Resuming training of: " + model_checkpoint)
-        checkpoint = torch.load(model_checkpoint)
+        checkpoint = torch.load(model_checkpoint, map_location=self.device)
         self.net.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.loss_history = checkpoint['losses']
