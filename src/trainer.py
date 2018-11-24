@@ -106,14 +106,16 @@ class Training:
         
             batch_loss = loss.item()
             
-            print('[{:>2} / {}] batch loss: {:>10.3f}'
-                .format(batch_idx + 1, len(self.trainloader), batch_loss))
+            print('[Epoch {:>2} / {} | Batch: {:>2} / {}] loss: {:>10.3f}'
+                .format(epoch+1, self.EPOCHS, batch_idx + 1, len(self.trainloader), batch_loss))
             epoch_loss += batch_loss
             
         # Epoch loss = mean loss over all batches
         # length of trainloader indicates number of batches
         epoch_loss /= len(self.trainloader)
         self.loss_history['train'].append(epoch_loss)
+
+        print("Epoch loss: {:.5f}".format(epoch_loss))
 
     def validate(self, epoch):
         """One epoch validation on a dev set"""
@@ -137,12 +139,12 @@ class Training:
                 dev_batch_loss = self.mse(ab_dev_output, ab_dev)
                 dev_loss += dev_batch_loss
 
-                print("[E {:>2}/ {}][B {:>2} / {}] dev batch loss: {:>10.3f}"
-                    .format(epoch+1, self.EPOCHS, batch_idx+1, len(self.devloader), dev_batch_loss))
+                print("[Validation] [Batch {:>2} / {}] dev loss: {:>10.3f}"
+                    .format(batch_idx+1, len(self.devloader), dev_batch_loss))
                 
                 
                 
-        print("Dev loss {:.3f}".format(dev_loss.item()/len(self.devloader)))
+        print("Dev loss {:.5f}".format(dev_loss.item()/len(self.devloader)))
         
         dev_loss /= len(self.devloader)
         self.loss_history['val'].append(dev_loss)
@@ -220,7 +222,7 @@ class Training:
         """Runs both training and validating."""
         for epoch in range(self.start_epoch, self.EPOCHS):
             print("{2}\nEpoch {0} / {1}\n{2}"
-                  .format(epoch + 1, self.EPOCHS, '-'*32))
+                  .format(epoch + 1, self.EPOCHS, '-'*47))
             self.train(epoch)
             self.validate(epoch)
             self.save_checkpoint(epoch)
