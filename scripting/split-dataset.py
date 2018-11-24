@@ -69,5 +69,5 @@ def split_set(root, out_root, a_size, b_size=None, a_name='train', b_name='test'
 
 
 if __name__ == "__main__":
-    split_set('./data/food41-structured/train', './data/food41-new', 10, 5, 'test', 'train')
-    split_set('./data/food41-structured/train', './data/food41-new', 10, None, 'val')
+    split_set('../data/places365_standard/train/', '../data/places100/', 2048, 768)
+    split_set('../data/places365_standard/val/', '../data/places100/', 512, None, 'val')
