@@ -20,7 +20,7 @@ from trainer import Training
 from colnet import ColNet
 
 
-def load_config(config_file):
+def load_config(config_file, model_checkpoint=None):
     """Loads config from YAML file
 
     Args:
@@ -32,7 +32,6 @@ def load_config(config_file):
     # Default parameters
     net_size = 1
     learning_rate = 0.0001
-    model_checkpoint = None
 
     with open(config_file, 'r') as conf:
         y = yaml.load(conf)
@@ -68,4 +67,5 @@ if __name__ == "__main__":
 
     t = load_config(args.config)
     t.run()
+    t.test()
     
