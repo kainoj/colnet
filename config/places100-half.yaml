@@ -1,0 +1,7 @@
+---
+epochs: 10
+batch_size: 256
+net_size: 2
+img_dir_train: ../data/places100/train
+img_dir_val: ../data/places100/val
+img_dir_test: ../data/places100/test
