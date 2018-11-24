@@ -45,23 +45,25 @@ class Training:
         self.img_dir_test = img_dir_test
         self.net_size = net_size
 
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() 
+                                   else "cpu")
+        
         self.net = ColNet(net_size=net_size)
+        self.net.to(self.device)
+        print("Using {}\n".format(self.device))
+        
         self.start_epoch = start_epoch
         self.EPOCHS = epochs
         self.BATCH_SIZE = batch_size
         self.loss_history = { "train": [], "val":[] }
-
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() 
-                                   else "cpu")
-
+        
+        self.mse = nn.MSELoss(reduction='sum')
+        self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
+        
+        
         if model_checkpoint:
             self.load_checkpoint(model_checkpoint)
 
-        print("Using {}\n".format(self.device))
-        self.net.to(self.device)
-
-        self.mse = nn.MSELoss(reduction='sum')
-        self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
 
         self.trainset = ImagesDateset(self.img_dir_train, all2mem=True)
         self.trainloader = DataLoader(self.trainset, batch_size=self.BATCH_SIZE, 
