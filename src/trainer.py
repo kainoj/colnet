@@ -137,8 +137,8 @@ class Training:
                 dev_batch_loss = self.mse(ab_dev_output, ab_dev)
                 dev_loss += dev_batch_loss
 
-                print("[{:>2} / {}] dev batch loss: {:>10.3f}"
-                    .format(batch_idx+1, len(self.devloader), dev_batch_loss))
+                print("[E {:>2}/ {}][B {:>2} / {}] dev batch loss: {:>10.3f}"
+                    .format(epoch+1, self.EPOCHS, batch_idx+1, len(self.devloader), dev_batch_loss))
                 
                 
                 
