@@ -7,6 +7,14 @@ from skimage import color, io
 from random import randint
 
 
+class HandleGrayscale(object):
+    """TODO(przemek)"""
+    def __call__(self, image):
+        if len(image.shape) < 3:
+            image = color.gray2rgb(image)
+        return image
+
+
 class RandomCrop(object):
     """Randomly crops an image to size x size."""
     
@@ -106,7 +114,8 @@ class ImagesDateset(torchvision.datasets.ImageFolder):
         self.testing = testing
 
         self.composed = torchvision.transforms.Compose(
-            [RandomCrop(224), Rgb2LabNorm(), ToTensor(), SplitLab()]
+            [HandleGrayscale(), RandomCrop(224), Rgb2LabNorm(), 
+             ToTensor(), SplitLab()]
         )
         
             
