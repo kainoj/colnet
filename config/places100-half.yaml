@@ -1,7 +1,8 @@
 ---
-epochs: 10
-batch_size: 256
+epochs: 100
+batch_size: 128
 net_size: 2
 img_dir_train: ../data/places100/train
 img_dir_val: ../data/places100/val
 img_dir_test: ../data/places100/test
+model_checkpoint: ../model/colnet181124-20-42-33-9.pt
