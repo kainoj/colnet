@@ -66,7 +66,7 @@ class Training:
             self.load_checkpoint(model_checkpoint)
 
 
-        self.trainset = ImagesDateset(self.img_dir_train, all2mem=True)
+        self.trainset = ImagesDateset(self.img_dir_train)
         self.trainloader = DataLoader(self.trainset, batch_size=self.BATCH_SIZE, 
                                       shuffle=True, num_workers=num_workers)
 
@@ -74,7 +74,7 @@ class Training:
         self.testloader = DataLoader(self.testset, batch_size=self.BATCH_SIZE,
                                      shuffle=False, num_workers=num_workers)
 
-        self.devset = ImagesDateset(self.img_dir_val, all2mem=True)
+        self.devset = ImagesDateset(self.img_dir_val)
         self.devloader = DataLoader(self.devset, batch_size=self.BATCH_SIZE,
                                     shuffle=False, num_workers=num_workers)
 

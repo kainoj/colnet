@@ -8,7 +8,12 @@ from random import randint
 
 
 class HandleGrayscale(object):
-    """TODO(przemek)"""
+    """Feeds the pipeline with 3 - channel image.
+    
+    All transformations below work with RGB images only.
+    If a 1-channel grayscale image is given, it's converted to
+    equivalent 3-channel RGB image.
+    """
     def __call__(self, image):
         if len(image.shape) < 3:
             image = color.gray2rgb(image)
@@ -79,11 +84,8 @@ class SplitLab(object):
 class ImagesDateset(torchvision.datasets.ImageFolder):
     """Custom dataset for loading and pre-processing images."""
 
-    def __init__(self, root, all2mem=False, testing=False):
+    def __init__(self, root, testing=False):
         """Initializes the dataset and loads images. 
-        
-        By default images are loaded to memory in
-        a lazy manner i.e when one needs to get it.
 
         If testing is set, then image name is returned instead of label.
 
@@ -100,16 +102,11 @@ class ImagesDateset(torchvision.datasets.ImageFolder):
 
         Args:
             root: a directory from which images are loaded
-            all2mem: if set to True, then all images
-                will be read to memory at once
             testing: if set to True, an image name will 
                 be returned insead of label index
         """
         super().__init__(root=root, loader=io.imread)
         
-        if all2mem:
-            print("[WARNING] all2mem temporarily disabled")
-            
         self.testing = testing
 
         self.composed = torchvision.transforms.Compose(
