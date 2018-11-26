@@ -1,0 +1,16 @@
+botanical_garden
+formal_garden
+japanese_garden
+roof_garden
+topiary_garden
+vegetable_garden
+zen_garden
+lawn
+house
+forest-broadleaf
+sky
+rainforest
+tree_farm
+greenhouse-indoor
+park
+golf_course
