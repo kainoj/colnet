@@ -12,6 +12,8 @@ Structure of YAML file:
     img_dir_train: name of directory containing images for TRAINING.
     img_dir_val: name of directory containing images for VALIDATING.
     img_dir_test: name of directory containing images for TESTING.
+
+    num_workers: number of workers in trainloader. DEFAULT: 4
 """
 
 import yaml
@@ -32,6 +34,7 @@ def load_config(config_file, model_checkpoint=None):
     # Default parameters
     net_size = 1
     learning_rate = 0.0001
+    num_workers = 4
 
     with open(config_file, 'r') as conf:
         y = yaml.load(conf)
@@ -45,6 +48,9 @@ def load_config(config_file, model_checkpoint=None):
         if 'model_checkpoint' in y:
             model_checkpoint = y['model_checkpoint']
 
+        if 'num_workers' in y:
+            num_workers = y['num_workers']
+
 
         train = Training(batch_size=y['batch_size'],
                          epochs=y['epochs'],
@@ -53,7 +59,8 @@ def load_config(config_file, model_checkpoint=None):
                          img_dir_test=y['img_dir_test'],
                          net_size=net_size,
                          learning_rate=learning_rate,
-                         model_checkpoint=model_checkpoint)
+                         model_checkpoint=model_checkpoint,
+                         num_workers=num_workers)
 
         return train
 

@@ -25,7 +25,8 @@ class Training:
                  start_epoch=0,
                  net_size=1,
                  learning_rate=0.0001,
-                 model_checkpoint=None):
+                 model_checkpoint=None,
+                 num_workers=4):
         """Initializes training environment
 
         Args:
@@ -67,15 +68,15 @@ class Training:
 
         self.trainset = ImagesDateset(self.img_dir_train, all2mem=True)
         self.trainloader = DataLoader(self.trainset, batch_size=self.BATCH_SIZE, 
-                                      shuffle=True, num_workers=4)
+                                      shuffle=True, num_workers=num_workers)
 
         self.testset = ImagesDateset(self.img_dir_test, testing=True)
         self.testloader = DataLoader(self.testset, batch_size=self.BATCH_SIZE,
-                                     shuffle=False, num_workers=4)
+                                     shuffle=False, num_workers=num_workers)
 
         self.devset = ImagesDateset(self.img_dir_val, all2mem=True)
         self.devloader = DataLoader(self.devset, batch_size=self.BATCH_SIZE,
-                                    shuffle=False, num_workers=4)
+                                    shuffle=False, num_workers=num_workers)
 
 
         self.current_model_name = model_checkpoint
