@@ -78,7 +78,7 @@ class Training:
                                     shuffle=False, num_workers=4)
 
 
-        self.current_model_name = None
+        self.current_model_name = model_checkpoint
 
 
     def train(self, epoch):
@@ -179,8 +179,10 @@ class Training:
                 L = L.to(self.device)
                 ab_outputs = self.net(L)
                 
+                L = L.to(torch.device("cpu"))
+                ab_outputs = ab_outputs.to(torch.device("cpu"))
+                
                 for i in range(L.shape[0]):
-                    print("processing: {}".format(name[i]))
                     img = net_out2rgb(L[i], ab_outputs[i])
                     io.imsave(os.path.join("../out/", name[i]), img)
                 
@@ -227,18 +229,8 @@ class Training:
             self.train(epoch)
             self.validate(epoch)
             self.save_checkpoint(epoch)
-        print('\nFinished Training.')
+        print('\nFinished Training.\n')
 
 
 if __name__ == "__main__":
-    img_dir_train = '../data/food41-120-train/'
-    img_dir_test  = '../data/food41-120-train/'
-    img_dir_dev   = '../data/food41-120-test/'   
-
-    train = Training(8, 120, img_dir_train=img_dir_train,
-                     img_dir_test=img_dir_test, 
-                     img_dir_val=img_dir_dev,
-                     net_size=4)
-
-    train.run()
-    train.test()
+    print("Hello, nothing's here")

@@ -23,7 +23,6 @@ class RandomCrop(object):
         
     def __call__(self, image):
 
-        # TODO(Przemek): implement random cropping
         h, w, _ = image.shape
         assert min(h, w) >= self.size
 

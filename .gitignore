@@ -2,3 +2,7 @@
 .ipynb_checkpoints/
 *.pdf
 out/
+screenlog*
+*.zip
+*_pycahe*
+src/__pycache__/

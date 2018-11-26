@@ -16,8 +16,9 @@ def net_out2rgb(L, ab_out):
         3 channel RGB image
     """
     # Convert to numpy and unnnormalize
-    L = L.numpy() * 100.0
-    ab_out = np.floor(ab_out.numpy() * 255.0) - 128.0 
+    L = (L.numpy() * 100.0).astype(np.int8)
+    ab_out = (np.floor(ab_out.numpy() * 255.0) - 128.0).astype(np.int8)
+    
     
     # L and ab_out are tenosr i.e. are of shape of
     # Height x Width x Channels
@@ -26,6 +27,6 @@ def net_out2rgb(L, ab_out):
     ab_out = ab_out.transpose((1, 2, 0))
 
     # Stack layers  
-    lab_stack = np.dstack((L, ab_out))
+    img_stack = np.dstack((L, ab_out))
     
-    return color.lab2rgb(lab_stack)
+    return color.lab2rgb(img_stack)
