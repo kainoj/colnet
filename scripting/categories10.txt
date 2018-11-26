@@ -1,0 +1,10 @@
+botanical_garden
+formal_garden
+japanese_garden
+roof_garden
+topiary_garden
+vegetable_garden
+zen_garden
+lawn
+house
+cottage

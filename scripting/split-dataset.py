@@ -25,6 +25,7 @@ Purpose of this script is to split data into train/val/test sets.
 """
 
 import os
+import sys
 import shutil
 from random import shuffle
 
@@ -37,13 +38,16 @@ def copy_imgs(imgs, src, dst):
         shutil.copy(src_path, dst)
 
 
-def split_set(root, out_root, a_size, b_size=None, a_name='train', b_name='test'):
+def split_set(root, out_root,
+              a_size, b_size=None, 
+              a_name='train', b_name='test', 
+              chosen_categories_src=None):
     """
     Splits files in ./root into two subsets 
         ./out_root/a_name/
         ./out_root/b_name
     """
-    chosen_classes = [line.rstrip('\n') for line in open('categories100.txt', 'r')]
+    chosen_classes = [line.rstrip('\n') for line in open(chosen_categories_src, 'r')]
 
     print("Splitting {}/*/* into {}/{}/*/* ".format(root, out_root, a_name))
 
@@ -69,5 +73,13 @@ def split_set(root, out_root, a_size, b_size=None, a_name='train', b_name='test'
 
 
 if __name__ == "__main__":
-    split_set('../data/places365_standard/train/', '../data/places100/', 2048, 768)
-    split_set('../data/places365_standard/val/', '../data/places100/', 512, None, 'val')
+    chosen_categories_src = sys.argv[1]
+
+    print("Only categories from {} will be chosen.".format(chosen_categories_src))
+
+    split_set('../data/places365_standard/train/', '../data/places10/', 
+              4096, 768, a_name='train', b_name='test', 
+              chosen_categories_src=chosen_categories_src)
+    split_set('../data/places365_standard/val/', '../data/places10/', 
+              512, None, a_name='val', b_name=None,
+              chosen_categories_src=chosen_categories_src)
