@@ -76,9 +76,7 @@ class Training:
                                     shuffle=False, num_workers=4)
 
 
-        # We'll keep track on all models 
-        # names that were saved on traing
-        self.model_names_history = []
+        self.current_model_name = None
 
 
     def train(self, epoch):
@@ -157,7 +155,7 @@ class Training:
         """
 
         if model_dir is None:
-            model_dir = self.model_names_history[-1]
+            model_dir = self.current_model_name
 
         print("Make sure you're using up to date model!!!")    
         print("Colorizing {} using {}\n".format(self.img_dir_test, model_dir))
@@ -200,7 +198,7 @@ class Training:
             'losses': self.loss_history    
         }, full_path)        
 
-        self.model_names_history.append(full_path)
+        self.current_model_name = full_path
         print('\nsaved model to {}\n'.format(full_path))
 
 
@@ -216,6 +214,7 @@ class Training:
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.loss_history = checkpoint['losses']
         self.start_epoch = checkpoint['epoch'] + 1 
+        self.current_model_name = model_checkpoint
 
 
     def run(self):
