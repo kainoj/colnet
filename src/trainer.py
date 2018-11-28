@@ -26,6 +26,7 @@ class Training:
                  net_size=1,
                  learning_rate=0.0001,
                  model_checkpoint=None,
+                 models_dir='../model/'
                  num_workers=4):
         """Initializes training environment
 
@@ -45,6 +46,10 @@ class Training:
         self.img_dir_val = img_dir_val
         self.img_dir_test = img_dir_test
         self.net_size = net_size
+        self.models_dir = models_dir
+
+        if not os.path.exists(self.models_dir):
+              os.makedirs(self.models_dir)
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() 
                                    else "cpu")
@@ -192,7 +197,7 @@ class Training:
 
     def save_checkpoint(self, epoch):
         """Saves a checkpoint of the model to a file."""
-        path = "../model/"
+        path = self.models_dir
         fname = "colnet{}-{}.pt".format(time.strftime("%y%m%d-%H-%M-%S"), epoch)
         full_path = os.path.join(path, fname)
 
