@@ -93,7 +93,7 @@ class Training:
                                     shuffle=False, num_workers=num_workers)
 
 
-        self.current_model_name = model_checkpoint
+        self.current_model_name = model_checkpoint  
 
 
     def train(self, epoch):
@@ -247,5 +247,27 @@ class Training:
         print('\nFinished Training.\n')
 
 
+    def info(self):
+        print("{0} Training environment info {0}\n".format("-"*13))
+
+        print("Training starts from epoch: {}".format(self.start_epoch))
+        print("Total number of epochs:     {}".format(self.EPOCHS))
+        print("ColNet parameters are devided by: {}".format(self.net_size))
+        print("Batch size:  {}".format(self.BATCH_SIZE))
+        print("Used devide: {}".format(self.device))
+        print()
+
+        if self.current_model_name:
+            print("Current model name:      " + self.current_model_name)
+
+        print("Training data directory: " + self.img_dir_train)
+        print("Validate data directory: " + self.img_dir_val)
+        print("Testing data directory:  " + self.img_dir_test)
+        print("Models are saved to:     " + self.models_dir)
+        print("Colorized images are saved to: " + self.img_out_dir)
+        print("-" * 53 + "\n")
+
+
+
 if __name__ == "__main__":
-    print("Hello, nothing's here")
+    print("Hello, have a great day!")
