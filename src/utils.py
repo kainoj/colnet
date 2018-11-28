@@ -17,7 +17,7 @@ def net_out2rgb(L, ab_out):
     """
     # Convert to numpy and unnnormalize
     L = L.numpy() * 100.0
-    ab_out = ab_out.numpy() * 255.0 - 128.0
+    ab_out = ab_out.numpy() * 254.0 - 127.0
     
     
     # L and ab_out are tenosr i.e. are of shape of
