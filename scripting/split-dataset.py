@@ -77,9 +77,9 @@ if __name__ == "__main__":
 
     print("Only categories from {} will be chosen.".format(chosen_categories_src))
 
-    split_set('../data/places365_standard/train/', '../data/places10/', 
+    split_set('./data/places365_standard/train/', './data/places10/', 
               4096, 768, a_name='train', b_name='test', 
               chosen_categories_src=chosen_categories_src)
-    split_set('../data/places365_standard/val/', '../data/places10/', 
+    split_set('./data/places365_standard/val/', './data/places10/', 
               512, None, a_name='val', b_name=None,
               chosen_categories_src=chosen_categories_src)

@@ -1,12 +1,14 @@
-#!/bin/bash/
+#!/bin/bash
 
-mkdir -s data/
+mkdir -p data/
 
 if [ ! -f places365standard_easyformat.tar ]; then
     echo "Downloading dataset ..."
+    echo
     
     wget -nc http://data.csail.mit.edu/places/places365/places365standard_easyformat.tar
 
+    echo
     echo "... done."
     echo "Extracting to data/ ..."
 
@@ -17,9 +19,11 @@ fi
 
 
 echo 'Splitting dataset ...'
+echo
 
-python3 scripting/split-dataset.py categories10.txt
+python3 scripting/split-dataset.py scripting/categories10.txt
 
+echo
 echo '... done!'
 echo 'Please run run.sh to train the network.'
 
