@@ -214,7 +214,8 @@ class Training:
             'epoch': epoch,
             'model_state_dict': self.net.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
-            'losses': self.loss_history    
+            'losses': self.loss_history,
+            'net_size': self.net_size    
         }, full_path)        
 
         self.current_model_name = full_path
@@ -233,6 +234,7 @@ class Training:
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.loss_history = checkpoint['losses']
         self.start_epoch = checkpoint['epoch'] + 1 
+        self.net_size = checkpoint['net_size'] 
         self.current_model_name = model_checkpoint
 
 
