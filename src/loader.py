@@ -4,6 +4,8 @@
 Structure of YAML file:
     model_checkpoint: (optional) path to a checkpoint of a net state. 
         If given, training resume on based on rest of parameters.
+    models_dir: a directory to which models are saved. DEFAULT: ../model
+    img_out_dir: a directory where colorized images are saved. DEFAULT: ../out
     epochs: total number of epoches for model yo run.
     batch_size: batch size for train, test and dev sets.
     net_size: (optional) divisor of net optput sizes. DEFAULT: 1.
@@ -35,6 +37,8 @@ def load_config(config_file, model_checkpoint=None):
     net_size = 1
     learning_rate = 0.0001
     num_workers = 4
+    models_dir = '../model/'
+    img_out_dir = '../out/'
 
     with open(config_file, 'r') as conf:
         y = yaml.load(conf)
@@ -51,6 +55,12 @@ def load_config(config_file, model_checkpoint=None):
         if 'num_workers' in y:
             num_workers = y['num_workers']
 
+        if 'models_dir' in y:
+            models_dir = y['models_dir']
+        
+        if 'img_out_dir' in y:
+            img_out_dir = y['img_out_dir']
+
 
         train = Training(batch_size=y['batch_size'],
                          epochs=y['epochs'],
@@ -60,7 +70,9 @@ def load_config(config_file, model_checkpoint=None):
                          net_size=net_size,
                          learning_rate=learning_rate,
                          model_checkpoint=model_checkpoint,
-                         num_workers=num_workers)
+                         num_workers=num_workers,
+                         models_dir=models_dir,
+                         img_out_dir=img_out_dir)
 
         return train
 

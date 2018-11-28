@@ -26,6 +26,8 @@ class Training:
                  net_size=1,
                  learning_rate=0.0001,
                  model_checkpoint=None,
+                 models_dir='../model/',
+                 img_out_dir='../out',
                  num_workers=4):
         """Initializes training environment
 
@@ -40,11 +42,23 @@ class Training:
             learning_rate: alpha parameter of GD/ADAM. Default: 0.0001
             model_checkpoint: a path to a previously saved model. 
                 Training will resume. Defaut: None
+            models_dir: directory to which models are saved. DEFAULT: ../model
+            img_out_dir: a directory where colorized
+                images are saved. DEFAULT: ../out
         """
         self.img_dir_train = img_dir_train
         self.img_dir_val = img_dir_val
         self.img_dir_test = img_dir_test
         self.net_size = net_size
+        
+        self.models_dir = models_dir
+        if not os.path.exists(self.models_dir):
+              os.makedirs(self.models_dir)
+
+        self.img_out_dir = img_out_dir
+        if not os.path.exists(self.img_out_dir):
+              os.makedirs(self.img_out_dir)
+
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() 
                                    else "cpu")
@@ -79,7 +93,7 @@ class Training:
                                     shuffle=False, num_workers=num_workers)
 
 
-        self.current_model_name = model_checkpoint
+        self.current_model_name = model_checkpoint  
 
 
     def train(self, epoch):
@@ -154,7 +168,7 @@ class Training:
     def test(self, model_dir=None):
         """Tests network on a test set.
         
-        Saves all pics to ../out/
+        Saves all pics to a predefined directory (self.img_out_dir)
         """
 
         if model_dir is None:
@@ -185,14 +199,14 @@ class Training:
                 
                 for i in range(L.shape[0]):
                     img = net_out2rgb(L[i], ab_outputs[i])
-                    io.imsave(os.path.join("../out/", name[i]), img)
+                    io.imsave(os.path.join(self.img_out_dir, name[i]), img)
                 
-        print("Saved all photos to ../out/")
+        print("Saved all photos to " + self.img_out_dir)
 
 
     def save_checkpoint(self, epoch):
         """Saves a checkpoint of the model to a file."""
-        path = "../model/"
+        path = self.models_dir
         fname = "colnet{}-{}.pt".format(time.strftime("%y%m%d-%H-%M-%S"), epoch)
         full_path = os.path.join(path, fname)
 
@@ -233,5 +247,27 @@ class Training:
         print('\nFinished Training.\n')
 
 
+    def info(self):
+        print("{0} Training environment info {0}\n".format("-"*13))
+
+        print("Training starts from epoch: {}".format(self.start_epoch))
+        print("Total number of epochs:     {}".format(self.EPOCHS))
+        print("ColNet parameters are devided by: {}".format(self.net_size))
+        print("Batch size:  {}".format(self.BATCH_SIZE))
+        print("Used devide: {}".format(self.device))
+        print()
+
+        if self.current_model_name:
+            print("Current model name:      " + self.current_model_name)
+
+        print("Training data directory: " + self.img_dir_train)
+        print("Validate data directory: " + self.img_dir_val)
+        print("Testing data directory:  " + self.img_dir_test)
+        print("Models are saved to:     " + self.models_dir)
+        print("Colorized images are saved to: " + self.img_out_dir)
+        print("-" * 53 + "\n")
+
+
+
 if __name__ == "__main__":
-    print("Hello, nothing's here")
+    print("Hello, have a great day!")
