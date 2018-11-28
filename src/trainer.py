@@ -26,7 +26,8 @@ class Training:
                  net_size=1,
                  learning_rate=0.0001,
                  model_checkpoint=None,
-                 models_dir='../model/'
+                 models_dir='../model/',
+                 img_out_dir='../out',
                  num_workers=4):
         """Initializes training environment
 
@@ -41,15 +42,23 @@ class Training:
             learning_rate: alpha parameter of GD/ADAM. Default: 0.0001
             model_checkpoint: a path to a previously saved model. 
                 Training will resume. Defaut: None
+            models_dir: directory to which models are saved. DEFAULT: ../model
+            img_out_dir: a directory where colorized
+                images are saved. DEFAULT: ../out
         """
         self.img_dir_train = img_dir_train
         self.img_dir_val = img_dir_val
         self.img_dir_test = img_dir_test
         self.net_size = net_size
+        
         self.models_dir = models_dir
-
         if not os.path.exists(self.models_dir):
               os.makedirs(self.models_dir)
+
+        self.img_out_dir = img_out_dir
+        if not os.path.exists(self.img_out_dir):
+              os.makedirs(self.img_out_dir)
+
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() 
                                    else "cpu")
@@ -159,7 +168,7 @@ class Training:
     def test(self, model_dir=None):
         """Tests network on a test set.
         
-        Saves all pics to ../out/
+        Saves all pics to a predefined directory (self.img_out_dir)
         """
 
         if model_dir is None:
@@ -190,9 +199,9 @@ class Training:
                 
                 for i in range(L.shape[0]):
                     img = net_out2rgb(L[i], ab_outputs[i])
-                    io.imsave(os.path.join("../out/", name[i]), img)
+                    io.imsave(os.path.join(self.img_out_dir, name[i]), img)
                 
-        print("Saved all photos to ../out/")
+        print("Saved all photos to " + self.img_out_dir)
 
 
     def save_checkpoint(self, epoch):
