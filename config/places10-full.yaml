@@ -9,3 +9,5 @@ img_dir_val: ./data/places10/val
 img_dir_test: ./data/places10/test
 img_out_dir: ./out/places10
 models_dir: ./model/places10
+model_checkpoint: ./model/places10/colnet181129-08-28-49-99.pt
+

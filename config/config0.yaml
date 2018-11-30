@@ -1,7 +1,0 @@
----
-epochs: 10
-batch_size: 8
-net_size: 8
-img_dir_train: ../data/food41-120-train/
-img_dir_val: ../data/food41-120-test/
-img_dir_test: ../data/food41-120-test/`
