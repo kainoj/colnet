@@ -1,9 +1,10 @@
-.gitignore
-.ipynb_checkpoints/
-*.pdf
 out/
-screenlog*
+model/
+data/
 *.zip
+*.tar
+*.pdf
+.ipynb_checkpoints/
+screenlog*
 *_pycahe*
 src/__pycache__/
-*.zip
