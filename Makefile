@@ -13,14 +13,15 @@ extract:
 
 split:
 	@echo 'Splitting dataset ...'
-	python3 scripting/split-dataset.py data/places365_standard/train/ data/places10/ scripting/places10 train 4096 --bname test --bsize 768
-	python3 scripting/split-dataset.pl data/places365_standard/val/ data/places10/ scripting/places10 val 512
+	python3 scripting/split-dataset.py data/places365_standard/train/ data/places10/ scripting/places10.txt train 3968 --bname test --bsize 128
+	python3 scripting/split-dataset.py data/places365_standard/val/ data/places10/ scripting/places10.txt val 100
 	@echo  '... done.'
 	@echo 'Please run `make run` to train the network.'
 
 
-dataset: setup download extract split
-	@"Downloading, extracting and splitting dataset."
+dataset: setup download extract
+	@echo "Downloading, extracting and splitting dataset."
+	@echo "Run `make split` to split the dataset"
 
 run:
 	python3 loader.py config/places10-full.yaml
