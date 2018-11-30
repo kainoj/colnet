@@ -8,9 +8,9 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from skimage import io
 
-from colnet import ColNet
-from dataset import ImagesDateset
-from utils import net_out2rgb
+from .colnet import ColNet
+from .dataset import ImagesDateset
+from .utils import net_out2rgb
 
 
 class Training:
@@ -26,8 +26,8 @@ class Training:
                  net_size=1,
                  learning_rate=0.0001,
                  model_checkpoint=None,
-                 models_dir='../model/',
-                 img_out_dir='../out',
+                 models_dir='./model/',
+                 img_out_dir='./out',
                  num_workers=4):
         """Initializes training environment
 
@@ -42,9 +42,9 @@ class Training:
             learning_rate: alpha parameter of GD/ADAM. Default: 0.0001
             model_checkpoint: a path to a previously saved model. 
                 Training will resume. Defaut: None
-            models_dir: directory to which models are saved. DEFAULT: ../model
+            models_dir: directory to which models are saved. DEFAULT: ./model
             img_out_dir: a directory where colorized
-                images are saved. DEFAULT: ../out
+                images are saved. DEFAULT: ./out
         """
         self.img_dir_train = img_dir_train
         self.img_dir_val = img_dir_val

@@ -1,0 +1,11 @@
+---
+epochs: 3
+batch_size: 4
+net_size: 1
+learning_rate: 0.001
+num_workers: 12
+img_dir_train: ./data/food41/train
+img_dir_val: ./data/food41/val
+img_dir_test: ./data/food41/train
+img_out_dir: ./out/food41
+models_dir: ./model/food41

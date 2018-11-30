@@ -20,8 +20,8 @@ Structure of YAML file:
 
 import yaml
 import argparse
-from trainer import Training
-from colnet import ColNet
+from src.trainer import Training
+from src.colnet import ColNet
 
 
 def load_config(config_file, model_checkpoint=None):
@@ -37,8 +37,8 @@ def load_config(config_file, model_checkpoint=None):
     net_size = 1
     learning_rate = 0.0001
     num_workers = 4
-    models_dir = '../model/'
-    img_out_dir = '../out/'
+    models_dir = './model/'
+    img_out_dir = './out/'
 
     with open(config_file, 'r') as conf:
         y = yaml.load(conf)
@@ -85,6 +85,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     t = load_config(args.config)
+    t.info()
     t.run()
     t.test()
     
