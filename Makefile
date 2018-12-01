@@ -31,4 +31,7 @@ zip_out:
 	zip --quiet --recurse-paths out.zip out/
 	rm -rf out/*
 	@echo "Zipped all files in ./out into out.zip"
-	
+
+clean:
+	rm -rf __pycache__/
+	rm -rf src/__pycache__/
