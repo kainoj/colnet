@@ -145,6 +145,21 @@ class ColNet(nn.Module):
         self.col = ColorizationNetwork(net_size)
 
 
+    def fusion_layer(self, mid_out, glob_out):
+        h = mid_out.shape[2]  # Height of a picture  
+        w = mid_out.shape[3]  # Width of a picture
+        
+        glob_stack2d = torch.stack(tuple(glob_out for _ in range(w)), 1)
+        glob_stack3d = torch.stack(tuple(glob_stack2d for _ in range(h)), 1)
+        glob_stack3d = glob_stack3d.permute(0, 3, 1, 2)
+
+        # 'Merge' two volumes
+        stack_volume = torch.cat((mid_out, glob_stack3d), 1)
+
+        out = F.relu(self.conv_fuse(stack_volume))
+        return out
+
+
     def forward(self, x):
         # Low level
         low_out = self.low(x)
@@ -159,28 +174,9 @@ class ColNet(nn.Module):
         # Global
         glob_out = self.glob(glob_out)
         
-        print("mid_out.shape \t{}".format(mid_out.shape))
-        print("glob_out.shape \t{}".format(glob_out.shape))
-
         # Fusion layer
-        h = mid_out.shape[2]  # Height of a picture  
-        w = mid_out.shape[3]  # Width of a picture
-        
-        glob_stack2d = torch.stack(tuple(glob_out for _ in range(w)), 1)
-        glob_stack3d = torch.stack(tuple(glob_stack2d for _ in range(h)), 1)
-        glob_stack3d = glob_stack3d.permute(0, 3, 1, 2)
+        out = self.fusion_layer(mid_out, glob_out)
 
-        print('glob stack 2d \t{}'.format(glob_stack2d.shape))
-        print('glob stack 3d \t{}'.format(glob_stack3d.shape))
-
-        # 'Merge' two volumes
-        stack_volume = torch.cat((mid_out, glob_stack3d), 1)
-        print("stack_volume.shape \t{}".format(stack_volume.shape))
-
-
-        out = F.relu(self.conv_fuse(stack_volume))
-        print("FUSED")
-        print("out.shape \t {}".format(out.shape))
         # Colorization Net
         out = self.col(out)
         print("net out.shape \t {}".format(out.shape))
