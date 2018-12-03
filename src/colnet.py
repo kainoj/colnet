@@ -53,6 +53,35 @@ class MidLevelFeatures(nn.Module):
         return out
 
 
+class GlobalFeatures(nn.Module):
+    """Global Features Network"""
+
+    def __init__(self, net_size=1):
+        super(GlobalFeatures, self).__init__()
+
+        ksize = np.array([512, 1024, 512, 256]) // net_size
+        self.ksize0 = ksize[0]
+
+        self.conv1 = Conv2d(ksize[0], ksize[0], 2)
+        self.conv2 = Conv2d(ksize[0], ksize[0], 1)
+        self.conv3 = Conv2d(ksize[0], ksize[0], 2)
+        self.conv4 = Conv2d(ksize[0], ksize[0], 1)
+        self.fc1 = nn.Linear(7*7*ksize[0], ksize[1])
+        self.fc2 = nn.Linear(ksize[1], ksize[2])
+        self.fc3 = nn.Linear(ksize[2], ksize[3])
+
+    def forward(self, x):
+        out = F.relu(self.conv1(x))
+        out = F.relu(self.conv2(out))
+        out = F.relu(self.conv3(out))
+        out = F.relu(self.conv4(out))
+        out = out.view(-1, 7*7*self.ksize0)
+        out = F.relu(self.fc1(out))
+        out = F.relu(self.fc2(out))
+        out = F.relu(self.fc3(out))
+
+        return out
+
 class ColorizationNetwork(nn.Module):
     """Colorizaion Network"""
 
@@ -110,21 +139,31 @@ class ColNet(nn.Module):
 
         self.low = LowLevelFeatures(net_size)
         self.mid = MidLevelFeatures(net_size)
+        self.glob = GlobalFeatures(net_size)
         self.col = ColorizationNetwork(net_size)
 
 
     def forward(self, x):
         # Low level
-        out = self.low(x)
+        a = self.low(x)
         
-        # y = out
-        # z = out
         # y → mid level
         # z → global features
          
-        # Mid level
-        out = self.mid(out)
+        y = a
+        z = a
 
+        # Mid level
+        y = self.mid(y)
+
+        # Global
+        z = self.glob(z)
+        print(z.shape)
+        print(y.shape)
+
+        # Fusion layer
+        # TODO(Przemek)
+        out = y
         # Colorization Net
         out = self.col(out)
         
