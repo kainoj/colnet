@@ -71,16 +71,21 @@ class GlobalFeatures(nn.Module):
         self.fc3 = nn.Linear(ksize[2], ksize[3])
 
     def forward(self, x):
-        out = F.relu(self.conv1(x))
-        out = F.relu(self.conv2(out))
-        out = F.relu(self.conv3(out))
-        out = F.relu(self.conv4(out))
-        out = out.view(-1, 7*7*self.ksize0)
-        out = F.relu(self.fc1(out))
-        out = F.relu(self.fc2(out))
+        y = F.relu(self.conv1(x))
+        y = F.relu(self.conv2(y))
+        y = F.relu(self.conv3(y))
+        y = F.relu(self.conv4(y))
+        y = y.view(-1, 7*7*self.ksize0)
+        y = F.relu(self.fc1(y))
+        y = F.relu(self.fc2(y))
+        
+        # Branching
+        out = y
+        classification_in = y
+
         out = F.relu(self.fc3(out))
 
-        return out
+        return out, classification_in
 
 class ColorizationNetwork(nn.Module):
     """Colorizaion Network"""
@@ -123,11 +128,31 @@ class ColorizationNetwork(nn.Module):
         return out
 
 
+class ClassNet(nn.Module):
+    """Classification Network Class"""
+
+    def __init__(self, num_classes, net_size=1):
+        super(ClassNet, self).__init__()
+        
+        self.num_classes = num_classes
+        ksize = np.array([512, 256]) // net_size
+
+        self.fc1 = nn.Linear(ksize[0], ksize[1])
+        self.fc2 = nn.Linear(ksize[1], num_classes)
+
+    def forward(self, x):
+        out = F.relu(self.fc1(x))
+        out = self.fc2(out)
+        return out
+
+
+
+
 
 class ColNet(nn.Module):
     """Colorization network class"""
 
-    def __init__(self, net_size=1):
+    def __init__(self, net_size=1, num_classes=10):
         """Initializes the network.
 
         Args:
@@ -141,8 +166,10 @@ class ColNet(nn.Module):
 
         self.low = LowLevelFeatures(net_size)
         self.mid = MidLevelFeatures(net_size)
+        self.classifier = ClassNet(num_classes, net_size)
         self.glob = GlobalFeatures(net_size)
         self.col = ColorizationNetwork(net_size)
+
 
 
     def fusion_layer(self, mid_out, glob_out):
@@ -172,14 +199,16 @@ class ColNet(nn.Module):
         mid_out = self.mid(mid_out)
 
         # Global
-        glob_out = self.glob(glob_out)
-        
+        glob_out, classification_in = self.glob(glob_out)
+
+        # Classification
+        classification_out = self.classifier(classification_in)
+
         # Fusion layer
         out = self.fusion_layer(mid_out, glob_out)
 
         # Colorization Net
         out = self.col(out)
-        print("net out.shape \t {}".format(out.shape))
         
         return out
         
