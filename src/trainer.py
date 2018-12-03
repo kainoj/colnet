@@ -114,7 +114,7 @@ class Training:
         for batch_idx, train_data in enumerate(self.trainloader):
 
             L, ab, labels = train_data
-            L, ab = L.to(self.device), ab.to(self.device)
+            L, ab, labels = L.to(self.device), ab.to(self.device), labels.to(self.device)
 
             self.optimizer.zero_grad()
             ab_out, labels_out = self.net(L)
@@ -151,7 +151,7 @@ class Training:
             for batch_idx, dev_data in enumerate(self.devloader):
 
                 L_dev, ab_dev, labels_dev = dev_data
-                L_dev, ab_dev = L_dev.to(self.device), ab_dev.to(self.device)
+                L_dev, ab_dev, labels_dev = L_dev.to(self.device), ab_dev.to(self.device), labels_dev.to(self.device)
 
                 ab_dev_output, labels_dev_out = self.net(L_dev)
 
