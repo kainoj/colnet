@@ -4,10 +4,10 @@ import torch.nn.functional as F
 import numpy as np
 
 
-def Conv2d(in_ch, out_ch, stride):
+def Conv2d(in_ch, out_ch, stride, kernel_size=3, padding=1):
         """Returns an instance of nn.Conv2d"""
         return nn.Conv2d(in_channels=in_ch, out_channels=out_ch,
-                         stride=stride, kernel_size=3, padding=1)
+                         stride=stride, kernel_size=kernel_size, padding=padding)
 
 
 class LowLevelFeatures(nn.Module):
@@ -137,6 +137,8 @@ class ColNet(nn.Module):
 
         self.net_size = net_size
 
+        self.conv_fuse = Conv2d(512 // net_size, 256 // net_size, 1, kernel_size=1, padding=0)
+
         self.low = LowLevelFeatures(net_size)
         self.mid = MidLevelFeatures(net_size)
         self.glob = GlobalFeatures(net_size)
@@ -145,27 +147,43 @@ class ColNet(nn.Module):
 
     def forward(self, x):
         # Low level
-        a = self.low(x)
+        low_out = self.low(x)
         
-        # y → mid level
-        # z → global features
-         
-        y = a
-        z = a
+        # Net branch         
+        mid_out = low_out
+        glob_out = low_out
 
         # Mid level
-        y = self.mid(y)
+        mid_out = self.mid(mid_out)
 
         # Global
-        z = self.glob(z)
-        print(z.shape)
-        print(y.shape)
+        glob_out = self.glob(glob_out)
+        
+        print("mid_out.shape \t{}".format(mid_out.shape))
+        print("glob_out.shape \t{}".format(glob_out.shape))
 
         # Fusion layer
-        # TODO(Przemek)
-        out = y
+        h = mid_out.shape[2]  # Height of a picture  
+        w = mid_out.shape[3]  # Width of a picture
+        
+        glob_stack2d = torch.stack(tuple(glob_out for _ in range(w)), 1)
+        glob_stack3d = torch.stack(tuple(glob_stack2d for _ in range(h)), 1)
+        glob_stack3d = glob_stack3d.permute(0, 3, 1, 2)
+
+        print('glob stack 2d \t{}'.format(glob_stack2d.shape))
+        print('glob stack 3d \t{}'.format(glob_stack3d.shape))
+
+        # 'Merge' two volumes
+        stack_volume = torch.cat((mid_out, glob_stack3d), 1)
+        print("stack_volume.shape \t{}".format(stack_volume.shape))
+
+
+        out = F.relu(self.conv_fuse(stack_volume))
+        print("FUSED")
+        print("out.shape \t {}".format(out.shape))
         # Colorization Net
         out = self.col(out)
+        print("net out.shape \t {}".format(out.shape))
         
         return out
         
