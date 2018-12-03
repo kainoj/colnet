@@ -210,5 +210,5 @@ class ColNet(nn.Module):
         # Colorization Net
         out = self.col(out)
         
-        return out
+        return out, classification_out
         
