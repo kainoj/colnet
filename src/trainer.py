@@ -99,8 +99,7 @@ class Training:
     def loss(self, col_target, col_out, class_target, class_out):
         loss_col = self.mse(col_target, col_out)
         loss_class = self.ce(class_out, class_target)
-        # TODO(Przemek) Enable loss_class
-        return loss_col #+ loss_class/300.0
+        return loss_col + loss_class/300.0
 
 
     def train(self, epoch):
