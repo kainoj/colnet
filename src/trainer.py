@@ -73,6 +73,7 @@ class Training:
         self.loss_history = { "train": [], "val":[] }
         
         self.mse = nn.MSELoss(reduction='sum')
+        self.ce = nn.CrossEntropyLoss()
         self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
         
         
@@ -95,6 +96,11 @@ class Training:
 
         self.current_model_name = model_checkpoint  
 
+    def loss(self, col_target, col_out, class_target, class_out):
+        loss_col = self.mse(col_target, col_out)
+        loss_class = self.ce(class_out, class_target)
+        return loss_col + loss_class/300.0
+
 
     def train(self, epoch):
         """One epoch network training"""
@@ -106,16 +112,15 @@ class Training:
 
         for batch_idx, train_data in enumerate(self.trainloader):
 
-            L, ab, _ = train_data
-            L, ab = L.to(self.device), ab.to(self.device)
+            L, ab, labels = train_data
+            L, ab, labels = L.to(self.device), ab.to(self.device), labels.to(self.device)
 
             self.optimizer.zero_grad()
-            ab_out = self.net(L)
-            
+            ab_out, labels_out = self.net(L)
             
             assert ab.shape == ab_out.shape
             
-            loss = self.mse(ab, ab_out)
+            loss = self.loss(ab, ab_out, labels, labels_out)
             loss.backward()
             self.optimizer.step()
         
@@ -144,14 +149,14 @@ class Training:
             
             for batch_idx, dev_data in enumerate(self.devloader):
 
-                L_dev, ab_dev, _ = dev_data
-                L_dev, ab_dev = L_dev.to(self.device), ab_dev.to(self.device)
+                L_dev, ab_dev, labels_dev = dev_data
+                L_dev, ab_dev, labels_dev = L_dev.to(self.device), ab_dev.to(self.device), labels_dev.to(self.device)
 
-                ab_dev_output = self.net(L_dev)
+                ab_dev_output, labels_dev_out = self.net(L_dev)
 
                 assert ab_dev.shape == ab_dev_output.shape
                 
-                dev_batch_loss = self.mse(ab_dev_output, ab_dev)
+                dev_batch_loss = self.loss(ab_dev, ab_dev_output, labels_dev, labels_dev_out )
                 dev_loss += dev_batch_loss
 
                 print("[Validation] [Batch {:>2} / {}] dev loss: {:>10.3f}"
@@ -192,7 +197,7 @@ class Training:
                 
                 L, _, name = data
                 L = L.to(self.device)
-                ab_outputs = self.net(L)
+                ab_outputs, _ = self.net(L)
                 
                 L = L.to(torch.device("cpu"))
                 ab_outputs = ab_outputs.to(torch.device("cpu"))
