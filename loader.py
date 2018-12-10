@@ -1,6 +1,7 @@
-"""This module is responsible for reading configuration from YAML file.
+"""This module is responsible for reading configuration from YAML file."""
 
 
+help = """
 Structure of YAML file:
     model_checkpoint: (optional) path to a checkpoint of a net state. 
         If given, training resume on based on rest of parameters.
@@ -79,9 +80,10 @@ def load_config(config_file, model_checkpoint=None):
 
 
 if __name__ == "__main__":
-    
-    parser = argparse.ArgumentParser(description='Loads network configuration.')
-    parser.add_argument('config', metavar='config', help='path to .yaml config file')
+    short_desc = 'Loads network configuration from YAML file.\n'
+    parser = argparse.ArgumentParser(description=short_desc + help,
+                      formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('config', metavar='config', help='Path to .yaml config file')
     args = parser.parse_args()
 
     t = load_config(args.config)
