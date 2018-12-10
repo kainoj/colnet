@@ -13,10 +13,10 @@ def Conv2d(in_ch, out_ch, stride, kernel_size=3, padding=1):
 class LowLevelFeatures(nn.Module):
     """Low-Level Features Network"""
 
-    def __init__(self, net_size=1):
+    def __init__(self, net_divisor=1):
         super(LowLevelFeatures, self).__init__()
 
-        ksize = np.array([1, 64, 128, 128, 256, 256, 512]) // net_size
+        ksize = np.array([1, 64, 128, 128, 256, 256, 512]) // net_divisor
         ksize[0] = 1
 
         self.conv1 = Conv2d(1, ksize[1], 2)
@@ -39,10 +39,10 @@ class LowLevelFeatures(nn.Module):
 class MidLevelFeatures(nn.Module):
     """Mid-Level Features Network"""
 
-    def __init__(self, net_size=1):
+    def __init__(self, net_divisor=1):
         super(MidLevelFeatures, self).__init__()
 
-        ksize = np.array([512, 512, 256]) // net_size
+        ksize = np.array([512, 512, 256]) // net_divisor
 
         self.conv7 = Conv2d(ksize[0], ksize[1], 1)
         self.conv8 = Conv2d(ksize[1], ksize[2], 1)
@@ -56,10 +56,10 @@ class MidLevelFeatures(nn.Module):
 class GlobalFeatures(nn.Module):
     """Global Features Network"""
 
-    def __init__(self, net_size=1):
+    def __init__(self, net_divisor=1):
         super(GlobalFeatures, self).__init__()
 
-        ksize = np.array([512, 1024, 512, 256]) // net_size
+        ksize = np.array([512, 1024, 512, 256]) // net_divisor
         self.ksize0 = ksize[0]
 
         self.conv1 = Conv2d(ksize[0], ksize[0], 2)
@@ -90,10 +90,10 @@ class GlobalFeatures(nn.Module):
 class ColorizationNetwork(nn.Module):
     """Colorizaion Network"""
 
-    def __init__(self, net_size=1):
+    def __init__(self, net_divisor=1):
         super(ColorizationNetwork, self).__init__()
 
-        ksize = np.array([256, 128, 64, 64, 32]) // net_size
+        ksize = np.array([256, 128, 64, 64, 32]) // net_divisor
 
         self.conv9 = Conv2d(ksize[0], ksize[1], 1)
         
@@ -131,11 +131,11 @@ class ColorizationNetwork(nn.Module):
 class ClassNet(nn.Module):
     """Classification Network Class"""
 
-    def __init__(self, num_classes, net_size=1):
+    def __init__(self, num_classes, net_divisor=1):
         super(ClassNet, self).__init__()
         
         self.num_classes = num_classes
-        ksize = np.array([512, 256]) // net_size
+        ksize = np.array([512, 256]) // net_divisor
 
         self.fc1 = nn.Linear(ksize[0], ksize[1])
         self.fc2 = nn.Linear(ksize[1], num_classes)
@@ -152,23 +152,23 @@ class ClassNet(nn.Module):
 class ColNet(nn.Module):
     """Colorization network class"""
 
-    def __init__(self, net_size=1, num_classes=10):
+    def __init__(self, net_divisor=1, num_classes=10):
         """Initializes the network.
 
         Args:
-            net_size - divisor of net output sizes. Useful for debugging.
+            net_divisor - divisor of net output sizes. Useful for debugging.
         """
         super(ColNet, self).__init__()
 
-        self.net_size = net_size
+        self.net_divisor = net_divisor
 
-        self.conv_fuse = Conv2d(512 // net_size, 256 // net_size, 1, kernel_size=1, padding=0)
+        self.conv_fuse = Conv2d(512 // net_divisor, 256 // net_divisor, 1, kernel_size=1, padding=0)
 
-        self.low = LowLevelFeatures(net_size)
-        self.mid = MidLevelFeatures(net_size)
-        self.classifier = ClassNet(num_classes, net_size)
-        self.glob = GlobalFeatures(net_size)
-        self.col = ColorizationNetwork(net_size)
+        self.low = LowLevelFeatures(net_divisor)
+        self.mid = MidLevelFeatures(net_divisor)
+        self.classifier = ClassNet(num_classes, net_divisor)
+        self.glob = GlobalFeatures(net_divisor)
+        self.col = ColorizationNetwork(net_divisor)
 
 
 

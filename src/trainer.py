@@ -23,7 +23,7 @@ class Training:
                  img_dir_val,
                  img_dir_test,
                  start_epoch=0,
-                 net_size=1,
+                 net_divisor=1,
                  learning_rate=0.0001,
                  model_checkpoint=None,
                  models_dir='./model/',
@@ -38,7 +38,7 @@ class Training:
             img_dir_val: name of directory containing images for VALIDATING
             img_dir_test: name of directory containing images for TESTING
             start_epoch: epoch to start training with. Default: 0
-            net_size: divisor og the net output sizes. Default: 1
+            net_divisor: divisor og the net output sizes. Default: 1
             learning_rate: alpha parameter of GD/ADAM. Default: 0.0001
             model_checkpoint: a path to a previously saved model. 
                 Training will resume. Defaut: None
@@ -49,7 +49,7 @@ class Training:
         self.img_dir_train = img_dir_train
         self.img_dir_val = img_dir_val
         self.img_dir_test = img_dir_test
-        self.net_size = net_size
+        self.net_divisor = net_divisor
         
         self.models_dir = models_dir
         if not os.path.exists(self.models_dir):
@@ -63,7 +63,7 @@ class Training:
         self.device = torch.device("cuda:0" if torch.cuda.is_available() 
                                    else "cpu")
         
-        self.net = ColNet(net_size=net_size)
+        self.net = ColNet(net_divisor=net_divisor)
         self.net.to(self.device)
         print("Using {}\n".format(self.device))
         
@@ -220,7 +220,7 @@ class Training:
             'model_state_dict': self.net.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
             'losses': self.loss_history,
-            'net_size': self.net_size    
+            'net_divisor': self.net_divisor    
         }, full_path)        
 
         self.current_model_name = full_path
@@ -239,7 +239,7 @@ class Training:
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.loss_history = checkpoint['losses']
         self.start_epoch = checkpoint['epoch'] + 1 
-        self.net_size = checkpoint['net_size'] 
+        self.net_divisor = checkpoint['net_divisor'] 
         self.current_model_name = model_checkpoint
 
 
@@ -259,7 +259,7 @@ class Training:
 
         print("Training starts from epoch: {}".format(self.start_epoch))
         print("Total number of epochs:     {}".format(self.EPOCHS))
-        print("ColNet parameters are devided by: {}".format(self.net_size))
+        print("ColNet parameters are devided by: {}".format(self.net_divisor))
         print("Batch size:  {}".format(self.BATCH_SIZE))
         print("Used devide: {}".format(self.device))
         print()

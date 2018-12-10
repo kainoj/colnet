@@ -9,7 +9,7 @@ Structure of YAML file:
     img_out_dir: a directory where colorized images are saved. DEFAULT: ../out
     epochs: total number of epoches for model yo run.
     batch_size: batch size for train, test and dev sets.
-    net_size: (optional) divisor of net optput sizes. DEFAULT: 1.
+    net_divisor: (optional) divisor of net optput sizes. DEFAULT: 1.
     learning_rate: (optional) learning rate of a net. DEFAULT: 0.0001.
 
     img_dir_train: name of directory containing images for TRAINING.
@@ -35,7 +35,7 @@ def load_config(config_file, model_checkpoint=None):
     """
 
     # Default parameters
-    net_size = 1
+    net_divisor = 1
     learning_rate = 0.0001
     num_workers = 4
     models_dir = './model/'
@@ -44,8 +44,8 @@ def load_config(config_file, model_checkpoint=None):
     with open(config_file, 'r') as conf:
         y = yaml.load(conf)
 
-        if 'net_size' in y:
-            net_size = y['net_size']
+        if 'net_divisor' in y:
+            net_divisor = y['net_divisor']
         
         if 'learning_rate' in y:
             learning_rate = y['learning_rate']
@@ -68,7 +68,7 @@ def load_config(config_file, model_checkpoint=None):
                          img_dir_train=y['img_dir_train'],
                          img_dir_val=y['img_dir_val'],
                          img_dir_test=y['img_dir_test'],
-                         net_size=net_size,
+                         net_divisor=net_divisor,
                          learning_rate=learning_rate,
                          model_checkpoint=model_checkpoint,
                          num_workers=num_workers,

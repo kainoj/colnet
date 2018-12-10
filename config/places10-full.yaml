@@ -1,7 +1,7 @@
 ---
 epochs: 100
 batch_size: 92
-net_size: 1
+net_divisor: 1
 learning_rate: 0.001
 num_workers: 12
 img_dir_train: ./data/places10/train
