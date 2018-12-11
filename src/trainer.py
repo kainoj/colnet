@@ -52,35 +52,15 @@ class Training:
         self.net_divisor = net_divisor
         
         self.models_dir = models_dir
+        self.img_out_dir = img_out_dir
+        
         if not os.path.exists(self.models_dir):
               os.makedirs(self.models_dir)
-
-        self.img_out_dir = img_out_dir
         if not os.path.exists(self.img_out_dir):
               os.makedirs(self.img_out_dir)
-
-
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() 
-                                   else "cpu")
         
-        self.net = ColNet(net_divisor=net_divisor)
-        self.net.to(self.device)
-        print("Using {}\n".format(self.device))
-        
-        self.start_epoch = start_epoch
-        self.EPOCHS = epochs
         self.BATCH_SIZE = batch_size
-        self.loss_history = { "train": [], "val":[] }
         
-        self.mse = nn.MSELoss(reduction='sum')
-        self.ce = nn.CrossEntropyLoss()
-        self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
-        
-        
-        if model_checkpoint:
-            self.load_checkpoint(model_checkpoint)
-
-
         self.trainset = ImagesDateset(self.img_dir_train)
         self.trainloader = DataLoader(self.trainset, batch_size=self.BATCH_SIZE, 
                                       shuffle=True, num_workers=num_workers)
@@ -93,9 +73,33 @@ class Training:
         self.devloader = DataLoader(self.devset, batch_size=self.BATCH_SIZE,
                                     shuffle=False, num_workers=num_workers)
 
+        self.classes = self.trainloader.dataset.classes
+        self.num_classes = len(self.classes)
+        
 
+
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() 
+                                   else "cpu")
+        print("Using {}\n".format(self.device))
+        
+        self.net = ColNet(net_divisor=net_divisor, num_classes=self.num_classes)
+        self.net.to(self.device)
+        
+        self.start_epoch = start_epoch
+        self.EPOCHS = epochs
+        
+        self.loss_history = { "train": [], "val":[] }
+        
+        self.mse = nn.MSELoss(reduction='sum')
+        self.ce = nn.CrossEntropyLoss()
+        self.optimizer = optim.Adam(self.net.parameters(), lr=learning_rate)
+        
+        if model_checkpoint:
+            self.load_checkpoint(model_checkpoint)
+        
         self.current_model_name = model_checkpoint  
 
+        
     def loss(self, col_target, col_out, class_target, class_out):
         loss_col = self.mse(col_target, col_out)
         loss_class = self.ce(class_out, class_target)
@@ -157,16 +161,15 @@ class Training:
                 assert ab_dev.shape == ab_dev_output.shape
                 
                 dev_batch_loss = self.loss(ab_dev, ab_dev_output, labels_dev, labels_dev_out )
-                dev_loss += dev_batch_loss
+                dev_loss += dev_batch_loss.item()
 
                 print("[Validation] [Batch {:>2} / {}] dev loss: {:>10.3f}"
                     .format(batch_idx+1, len(self.devloader), dev_batch_loss))
                 
                 
-                
-        print("Dev loss {:.5f}".format(dev_loss.item()/len(self.devloader)))
+        dev_loss /= len(self.devloader)        
         
-        dev_loss /= len(self.devloader)
+        print("Dev loss {:.5f}".format(dev_loss))
         self.loss_history['val'].append(dev_loss)
 
 
@@ -220,7 +223,8 @@ class Training:
             'model_state_dict': self.net.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
             'losses': self.loss_history,
-            'net_divisor': self.net_divisor    
+            'net_divisor': self.net_divisor,
+            'classes': self.classes
         }, full_path)        
 
         self.current_model_name = full_path
@@ -262,6 +266,7 @@ class Training:
         print("ColNet parameters are devided by: {}".format(self.net_divisor))
         print("Batch size:  {}".format(self.BATCH_SIZE))
         print("Used devide: {}".format(self.device))
+        print("Number of classes: {}".format(self.num_classes))
         print()
 
         if self.current_model_name:

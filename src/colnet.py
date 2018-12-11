@@ -152,7 +152,7 @@ class ClassNet(nn.Module):
 class ColNet(nn.Module):
     """Colorization network class"""
 
-    def __init__(self, net_divisor=1, num_classes=10):
+    def __init__(self, num_classes, net_divisor=1):
         """Initializes the network.
 
         Args:
