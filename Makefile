@@ -40,3 +40,15 @@ clean:
 	rm -rf __pycache__/
 	rm -rf src/__pycache__/
 	rm colorized-*.jpg
+
+
+places16:
+	@echo 'Places16 - splitting dataset ...'
+	# For each category:
+	# 3968 pics from train/ will go to places10/train
+	# 128  pics from train/ will go to places10/val
+	python3 scripting/split-dataset.py data/places365_standard/train/ data/places10/ scripting/places16.txt train 3968 --bname val --bsize 128
+	# 100  pics from val/   will go to places10/test
+	python3 scripting/split-dataset.py data/places365_standard/val/ data/places10/ scripting/places16.txt test 100
+	@echo  '... done.'
+	@echo 'Please run `python3 loaader.py config/places16.yaml` to train the network.'

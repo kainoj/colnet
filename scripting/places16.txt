@@ -1,0 +1,16 @@
+amusement_park
+beach
+bridge
+canyon
+cliff
+clothing_store
+formal_garden
+galley
+house
+kitchen
+library-indoor
+ocean
+office
+sky
+staircase
+valley
