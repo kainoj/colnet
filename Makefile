@@ -13,8 +13,12 @@ extract:
 
 split:
 	@echo 'Splitting dataset ...'
-	python3 scripting/split-dataset.py data/places365_standard/train/ data/places10/ scripting/places10.txt train 3968 --bname test --bsize 128
-	python3 scripting/split-dataset.py data/places365_standard/val/ data/places10/ scripting/places10.txt val 100
+	# For each category:
+	# 3968 pics from train/ will go to places10/train
+	# 128  pics from train/ will go to places10/val
+	python3 scripting/split-dataset.py data/places365_standard/train/ data/places10/ scripting/places10.txt train 3968 --bname val --bsize 128
+	# 100  pics from val/   will go to places10/test
+	python3 scripting/split-dataset.py data/places365_standard/val/ data/places10/ scripting/places10.txt test 100
 	@echo  '... done.'
 	@echo 'Please run `make run` to train the network.'
 
