@@ -1,5 +1,5 @@
 ---
-epochs: 100
+epochs: 45
 batch_size: 32
 net_divisor: 1
 learning_rate: 0.001
@@ -9,4 +9,3 @@ img_dir_val: ./data/places10/val
 img_dir_test: ./data/places10/test
 img_out_dir: ./out/places10
 models_dir: ./model/places10
-
