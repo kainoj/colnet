@@ -84,9 +84,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=short_desc + help,
                       formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('config', metavar='config', help='Path to .yaml config file')
+    parser.add_argument('--model', help='Path to pretrained .pt model')
     args = parser.parse_args()
-
-    t = load_config(args.config)
+ 
+    t = load_config(args.config, args.model)
     t.info()
     t.run()
     t.test()
