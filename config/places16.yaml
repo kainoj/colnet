@@ -1,5 +1,5 @@
 ---
-epochs: 100
+epochs: 60
 batch_size: 32
 net_divisor: 1
 learning_rate: 0.001
