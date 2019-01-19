@@ -1,4 +1,5 @@
 import os
+import shutil
 import time
 
 import torch
@@ -97,7 +98,9 @@ class Training:
         if model_checkpoint:
             self.load_checkpoint(model_checkpoint)
         
-        self.current_model_name = model_checkpoint  
+        self.current_model_name = model_checkpoint
+        self.best_val_loss = float("inf")
+        self.best_model_dir = os.path.join(self.models_dir, 'colnet-the-best.pt')
 
         
     def loss(self, col_target, col_out, class_target, class_out):
@@ -182,6 +185,9 @@ class Training:
         if model_dir is None:
             model_dir = self.current_model_name
 
+            if os.path.isfile(self.best_model_dir):
+                model_dir = self.best_model_dir
+
         print("Make sure you're using up to date model!!!")    
         print("Colorizing {} using {}\n".format(self.img_dir_test, model_dir))
 
@@ -229,6 +235,14 @@ class Training:
 
         self.current_model_name = full_path
         print('\nsaved model to {}\n'.format(full_path))
+
+        # If current model is the best - save it!
+        current_val_loss = self.loss_history['val'][-1]
+        if current_val_loss < self.best_val_loss:
+            self.best_val_loss = current_val_loss
+            shutil.copy(full_path, self.best_model_dir)
+            print("Saved the best model on epoch: {}\n".format(epoch + 1))
+
 
 
     def load_checkpoint(self, model_checkpoint):
