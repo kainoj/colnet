@@ -14,11 +14,11 @@ extract:
 split:
 	@echo 'Splitting dataset ...'
 	# For each category:
-	# 3968 pics from train/ will go to places10/train
-	# 128  pics from train/ will go to places10/val
-	python3 scripting/split-dataset.py data/places365_standard/train/ data/places10/ scripting/places10.txt train 3968 --bname val --bsize 128
-	# 100  pics from val/   will go to places10/test
-	python3 scripting/split-dataset.py data/places365_standard/val/ data/places10/ scripting/places10.txt test 100
+	# 4096 pics from train/ will go to places10/train
+	#  128 pics from train/ will go to places10/val
+	python3 scripting/split-dataset.py data/places365_standard/train/ data/places10/ scripting/places10.txt train 4096 --bname val --bsize 128
+	#   96 pics from val/   will go to places10/test
+	python3 scripting/split-dataset.py data/places365_standard/val/ data/places10/ scripting/places10.txt test 96
 	@echo  '... done.'
 	@echo 'Please run `make run` to train the network.'
 
@@ -28,7 +28,7 @@ dataset: setup download extract
 	@echo "Run `make split` to split the dataset"
 
 run:
-	python3 loader.py config/places10-full.yaml
+	python3 loader.py config/places10.yaml
 
 
 zip_out:
@@ -45,10 +45,10 @@ clean:
 places16:
 	@echo 'Places16 - splitting dataset ...'
 	# For each category:
-	# 3968 pics from train/ will go to places16/train
-	# 128  pics from train/ will go to places16/val
-	python3 scripting/split-dataset.py data/places365_standard/train/ data/places16/ scripting/places16.txt train 3968 --bname val --bsize 128
-	# 100  pics from val/   will go to places10/test
-	python3 scripting/split-dataset.py data/places365_standard/val/ data/places16/ scripting/places16.txt test 100
+	# 4096 pics from train/ will go to places16/train
+	#  128 pics from train/ will go to places16/val
+	python3 scripting/split-dataset.py data/places365_standard/train/ data/places16/ scripting/places16.txt train 4096 --bname val --bsize 128
+	#   96 pics from val/   will go to places16/test
+	python3 scripting/split-dataset.py data/places365_standard/val/ data/places16/ scripting/places16.txt test 96
 	@echo  '... done.'
 	@echo 'Please run `python3 loaader.py config/places16.yaml` to train the network.'
