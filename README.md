@@ -16,7 +16,10 @@ $ make split
 ```
 
 ### Requirements
-Python (3.6.3), pytorch (0.4.1), torchvision (0.2.1), skimage (0.14.1), numpy (1.15.2), Jupyter Notebook(4.4.0)
+Code is written in Python 3.6.3. [Here](requirements.txt) are all requirements, hit the following to install:
+```bash
+pip3 install -r requirements.txt
+```
 
 
 ### Network training
