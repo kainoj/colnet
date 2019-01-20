@@ -4,7 +4,6 @@ import argparse
 import torch
 import torchvision.transforms
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from skimage import io, color
