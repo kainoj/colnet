@@ -2,6 +2,13 @@
 Implementation of [_Let there be Color!_](http://iizuka.cs.tsukuba.ac.jp/projects/colorization/en/)
 by Satoshi Iizuka, Edgar Simo-Serra and Hiroshi Ishikawa.
 
+_Colorized 100 years old photo of Książ Castle:_
+
+![Colorized Książ Castle, Poland](colorized/ksiaz-castle.png "Colorized Książ Castle, Poland")
+
+_Other colorized images:_
+
+![Colorized images](colorized/results.png "Sample of colorized images")
 
 ### First run
 [Places365-Standard](http://places2.csail.mit.edu/download.html) 
