@@ -1,4 +1,4 @@
-## Colorized 100 years old photo of Książ Castle:
+## Colorized 100 years old photos of Książ Castle
 
 ![Colorized Książ Castle, Poland](ksiaz-castle2.png "Colorized Książ Castle, Poland")
 
