@@ -2,6 +2,13 @@
 Implementation of [_Let there be Color!_](http://iizuka.cs.tsukuba.ac.jp/projects/colorization/en/)
 by Satoshi Iizuka, Edgar Simo-Serra and Hiroshi Ishikawa.
 
+_Colorized 100 years old photo of Książ Castle:_
+
+![Colorized Książ Castle, Poland](colorized/ksiaz-castle.png "Colorized Książ Castle, Poland")
+
+_Other colorized images:_
+
+![Colorized images](colorized/results.png "Sample of colorized images")
 
 ### First run
 [Places365-Standard](http://places2.csail.mit.edu/download.html) 
@@ -16,7 +23,10 @@ $ make split
 ```
 
 ### Requirements
-Python (3.6.3), pytorch (0.4.1), torchvision (0.2.1), skimage (0.14.1), numpy (1.15.2), Jupyter Notebook(4.4.0)
+Code is written in Python 3.6.3. [Here](requirements.txt) are all requirements, hit the following to install:
+```bash
+pip3 install -r requirements.txt
+```
 
 
 ### Network training
