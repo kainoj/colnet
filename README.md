@@ -6,6 +6,8 @@ _Colorized 100 years old photo of Książ Castle:_
 
 ![Colorized Książ Castle, Poland](colorized/ksiaz-castle.png "Colorized Książ Castle, Poland")
 
+[More images](colorized/colorized.md)
+
 _Other colorized images:_
 
 ![Colorized images](colorized/results.png "Sample of colorized images")
