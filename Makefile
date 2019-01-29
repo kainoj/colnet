@@ -33,7 +33,7 @@ run:
 
 zip_out:
 	zip --quiet --recurse-paths out.zip out/
-	rm -rf out/*
+	#rm -rf out/*
 	@echo "Zipped all files in ./out into out.zip"
 
 clean:
@@ -52,3 +52,15 @@ places16:
 	python3 scripting/split-dataset.py data/places365_standard/val/ data/places16/ scripting/places16.txt test 96
 	@echo  '... done.'
 	@echo 'Please run `python3 loaader.py config/places16.yaml` to train the network.'
+    
+    
+places13:
+	@echo 'Places13 - splitting dataset ...'
+	# For each category:
+	# 4096 pics from train/ will go to places13/train
+	#  128 pics from train/ will go to places13/val
+	python3 scripting/split-dataset.py data/places365_standard/train/ data/places13/ scripting/places13.txt train 4096 --bname val --bsize 128
+	#   96 pics from val/   will go to places13/test
+	python3 scripting/split-dataset.py data/places365_standard/val/ data/places13/ scripting/places13.txt test 96
+	@echo  '... done.'
+	@echo 'Please run `python3 loaader.py config/places13.yaml` to train the network.'

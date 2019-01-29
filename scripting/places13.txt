@@ -1,0 +1,13 @@
+bridge
+building_facade
+castle
+cottage
+forest-broadleaf
+formal_garden
+house
+mountain
+palace
+park
+pond
+sky
+skyscraper

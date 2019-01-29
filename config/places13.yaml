@@ -1,0 +1,11 @@
+---
+epochs: 70
+batch_size: 32
+net_divisor: 1
+learning_rate: 0.001
+num_workers: 12
+img_dir_train: ./data/places13/train
+img_dir_val: ./data/places13/val
+img_dir_test: ./data/places13/test
+img_out_dir: ./out/places13
+models_dir: ./model/places13
