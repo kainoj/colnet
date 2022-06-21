@@ -1,6 +1,6 @@
 scikit_image==0.14.1
 torch==0.4.1
-numpy==1.15.2
+numpy==1.22.0
 torchvision==0.2.1
 skimage==0.0
 PyYAML==5.4
